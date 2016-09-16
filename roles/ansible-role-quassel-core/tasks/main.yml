@@ -29,8 +29,21 @@
 -  name: Create quassel directory
    file: path=/srv/quassel state=directory owner=quassel group=quassel
 
+- name: Get the local IP
+  local_action:
+      module: uri
+      url: http://checkip.amazonaws.com/
+      return_content: yes
+  register: ip_lookup
+- set_fact:
+      local_ip: "{{ ip_lookup.content | regex_replace('\n','') }}"
+- debug: var=local_ip
+
 - name: Setup ssl certificate
-  command: openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /srv/quassel/quasselCert.pem -out /srv/quassel/quasselCert.pem
+  shell: openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /srv/quassel/quasselCert.pem -out /srv/quassel/quasselCert.pem  -subj "/C=CA/ST=Vancouver/L=Vancouver/O=Chibifire/OU=IT Department/CN={{ local_ip }}"
+
+- name: Install quassel service
+  template: src=templates/quassel.service dest=/etc/systemd/system/quassel.service
 
 - name: Enable quassel-core on boot
   service: name=quassel state=started enabled=yes
