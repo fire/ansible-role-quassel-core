@@ -6,6 +6,12 @@
 - name: Install quassel-core
   yum: name=quassel-core state=latest
 
+- name: Install postgresql-server
+  yum: name=postgresql-server state=latest
+
+- name: Install qt-postgresql
+  yum: name=qt-postgresql state=latest
+
 - name: Set quassel-core port
   lineinfile: dest=/etc/default/quasselcore regexp='^PORT' line='PORT="{{ quasselcore_port }}"' owner=root group=root mode=0644
   notify:
