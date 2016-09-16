@@ -12,14 +12,28 @@
 - name: Install qt-postgresql
   yum: name=qt-postgresql state=latest
 
+- name: Install quassel default
+  template: src=templates/quassel.conf dest=/etc/default/quassel
+
 - name: Set quassel-core port
-  lineinfile: dest=/etc/default/quasselcore regexp='^PORT' line='PORT="{{ quasselcore_port }}"' owner=root group=root mode=0644
+  lineinfile: dest=/etc/default/quassel regexp='^PORT' line='PORT="{{ quasselcore_port }}"' owner=root group=root mode=0644
   notify:
   - restart quassel-core
 
-- name: Enable quassel-core on boot
-  service: name=quasselcore state=started enabled=yes
+- name: Add quassel group
+  group: name=quassel state=present
 
-- name: Setup ufw firewall rule
-  ufw: rule=allow port={{ quasselcore_port }} proto=tcp
-  when: quasselcore_setup_ufw
+-  name: Add quassel user
+   user: name=quassel comment="Quassel Client" group=quassel system=yes
+
+-  name: Create quassel directory
+   file: path=/srv/quassel state=directory owner=quassel group=quassel
+
+- name: Setup ssl certificate
+  command: openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /srv/quassel/quasselCert.pem -out /srv/quassel/quasselCert.pem
+
+- name: Enable quassel-core on boot
+  service: name=quassel state=started enabled=yes
+
+- name: Enable quassel in firewall
+  firewalld: port={{ quasselcore_port }}/tcp permanent=true state=enabled
