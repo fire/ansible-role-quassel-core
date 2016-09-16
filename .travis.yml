@@ -13,6 +13,7 @@ before_install:
   - sudo service docker restart
   - sleep 5
   - sudo docker pull centos:centos${OS_VERSION}
-  script:
- # Run tests in Container
-- tests/setup_tests.sh
+
+script:
+  # Run tests in Container
+  - tests/setup_tests.sh
