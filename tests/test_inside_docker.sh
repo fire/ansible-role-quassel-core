@@ -3,7 +3,7 @@
 OS_VERSION=$1
 
 ls -l /home
-
+yum install -y epel-release
 yum install -y python-pip
 pip install ansible
 ansible --version
