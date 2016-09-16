@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "geerlingguy/centos7"
     # Run Ansible from the Vagrant VM
   config.vm.provision "ansible_local" do |ansible|
-      ansible.playbook = "playbook.yml"
+      ansible.playbook = "test.yml"
       ansible.sudo = true
       ansible.install = true
       ansible.verbose = true
