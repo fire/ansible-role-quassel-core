@@ -5,7 +5,7 @@ env:
   - OS_TYPE=centos OS_VERSION=7 ANSIBLE_VERSION=1.9.2
 
 before_install:
-  - sudo yum install python-pip
+  - sudo yum install -y python-pip
 install:
   - pip install ansible
   - ansible --version
