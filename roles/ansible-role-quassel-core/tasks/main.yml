@@ -18,7 +18,7 @@
 - name: Set quassel-core port
   lineinfile: dest=/etc/default/quassel regexp='^PORT' line='PORT="{{ quasselcore_port }}"' owner=root group=root mode=0644
   notify:
-  - restart quassel-core
+  - restart quassel
 
 - name: Add quassel group
   group: name=quassel state=present
@@ -47,6 +47,9 @@
 
 - name: Enable quassel-core on boot
   service: name=quassel state=started enabled=yes
+
+- name: Enable firewalld on boot
+  service: name=firewalld state=started enabled=yes
 
 - name: Enable quassel in firewall
   firewalld: port={{ quasselcore_port }}/tcp permanent=true state=enabled
