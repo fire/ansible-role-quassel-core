@@ -4,6 +4,7 @@ OS_VERSION=$1
 
 ls -l /home
 yum install -y epel-release
+yum groupinstall -y "Development tools"
 yum install -y python-pip
 pip install ansible
 ansible --version
