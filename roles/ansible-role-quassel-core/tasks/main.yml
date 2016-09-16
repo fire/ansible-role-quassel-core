@@ -56,6 +56,8 @@
 
 - name: Create postgresql user
   postgresql_user: name=quassel role_attr_flags=NOSUPERUSER
+  become: true
+  become_user: postgres
 
 - name: Install qt-postgresql
   yum: name=qt-postgresql state=latest
