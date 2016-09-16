@@ -59,6 +59,11 @@
   become: true
   become_user: postgres
 
+- name: Create postgresql database
+  postgresql_db: name=quassel
+  become: true
+  become_user: postgres
+
 - name: Install qt-postgresql
   yum: name=qt-postgresql state=latest
 
