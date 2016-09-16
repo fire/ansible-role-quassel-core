@@ -6,12 +6,6 @@
 - name: Install quassel-core
   yum: name=quassel-core state=latest
 
-- name: Install postgresql-server
-  yum: name=postgresql-server state=latest
-
-- name: Install qt-postgresql
-  yum: name=qt-postgresql state=latest
-
 - name: Install quassel default
   template: src=templates/quassel.conf dest=/etc/default/quassel
 
@@ -44,6 +38,27 @@
 
 - name: Install quassel service
   template: src=templates/quassel.service dest=/etc/systemd/system/quassel.service
+
+- name: install the postgresql rpm
+  yum: name=https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-2.noarch.rpm state=present
+
+- name: Install postgresql-server
+  yum: name=postgresql95-server state=latest
+
+- name: Initialize postgresql database
+  shell: /usr/pgsql-9.5/bin/postgresql95-setup initdb || true
+
+- name: Start postgresql95-server
+  service: name=postgresql-9.5 state=started enabled=yes
+
+- name: Install python-psycopg2
+  yum: name=python-psycopg2 state=latest
+
+- name: Create postgresql user
+  postgresql_user: name=quassel role_attr_flags=NOSUPERUSER
+
+- name: Install qt-postgresql
+  yum: name=qt-postgresql state=latest
 
 - name: Enable quassel-core on boot
   service: name=quassel state=started enabled=yes
