@@ -1,18 +1,11 @@
 ---
 galaxy_info:
-  author: elnappo <elnappo@nerdpol.io>
+  author: K. S. Ernest (iFire) Lee <ernest.lee@chibifire.com>
   description: Install quassel-core
   license: MIT
   min_ansible_version: 1.9
   platforms:
-  - name: Ubuntu
-    versions:
-    - precise
-    - trusty
-  - name: Debian
-    versions:
-    - wheezy
-    - jessie
+  - name: RHEL
   categories:
   - networking
   - chat
