@@ -1,13 +1,13 @@
 ---
 sudo: required
-dist: trusty
-language: python
-python: "2.7"
+env:
+  #matrix:
+  - OS_TYPE=centos OS_VERSION=7 ANSIBLE_VERSION=1.9.2
+
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq python-apt python-pycurl curl ufw
+  - sudo yum install python-pip
 install:
-  - pip install ansible --upgrade
+  - pip install ansible
   - ansible --version
   - printf '[defaults]\nroles_path=../' >ansible.cfg
   - echo localhost > inventory
