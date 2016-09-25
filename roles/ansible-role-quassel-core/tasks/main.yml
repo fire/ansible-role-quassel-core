@@ -1,0 +1,77 @@
+---
+# tasks file for ansible-role-quassel-core
+- name: Install epel packages
+  yum: name=epel-release state=latest
+
+- name: Install quassel-core
+  yum: name=quassel-core state=latest
+
+- name: Install quassel default
+  template: src=templates/quassel.conf dest=/etc/default/quassel
+
+- name: Set quassel-core port
+  lineinfile: dest=/etc/default/quassel regexp='^PORT' line='PORT="{{ quasselcore_port }}"' owner=root group=root mode=0644
+  notify:
+  - restart quassel
+
+- name: Add quassel group
+  group: name=quassel state=present
+
+-  name: Add quassel user
+   user: name=quassel comment="Quassel Client" group=quassel system=yes
+
+-  name: Create quassel directory
+   file: path=/srv/quassel state=directory owner=quassel group=quassel
+
+- name: Get the local IP
+  local_action:
+      module: uri
+      url: http://checkip.amazonaws.com/
+      return_content: yes
+  register: ip_lookup
+- set_fact:
+      local_ip: "{{ ip_lookup.content | regex_replace('\n','') }}"
+- debug: var=local_ip
+
+- name: Setup ssl certificate
+  shell: openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /srv/quassel/quasselCert.pem -out /srv/quassel/quasselCert.pem  -subj "/C=CA/ST=Vancouver/L=Vancouver/O=Chibifire/OU=IT Department/CN={{ local_ip }}"
+
+- name: Install quassel service
+  template: src=templates/quassel.service dest=/etc/systemd/system/quassel.service
+
+- name: install the postgresql rpm
+  yum: name=https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-2.noarch.rpm state=present
+
+- name: Install postgresql-server
+  yum: name=postgresql95-server state=latest
+
+- name: Initialize postgresql database
+  shell: /usr/pgsql-9.5/bin/postgresql95-setup initdb || true
+
+- name: Start postgresql95-server
+  service: name=postgresql-9.5 state=started enabled=yes
+
+- name: Install python-psycopg2
+  yum: name=python-psycopg2 state=latest
+
+- name: Create postgresql user
+  postgresql_user: name=quassel role_attr_flags=NOSUPERUSER password=md5385e3946ae200102c4a03242e1b36099 encrypted=true
+  become: true
+  become_user: postgres
+
+- name: Create postgresql database
+  postgresql_db: name=quassel owner=quassel
+  become: true
+  become_user: postgres
+
+- name: Install qt-postgresql
+  yum: name=qt-postgresql state=latest
+
+- name: Enable quassel-core on boot
+  service: name=quassel state=started enabled=yes
+
+- name: Enable firewalld on boot
+  service: name=firewalld state=started enabled=yes
+
+- name: Enable quassel in firewall
+  firewalld: port={{ quasselcore_port }}/tcp permanent=true state=enabled
