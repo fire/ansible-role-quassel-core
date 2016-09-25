@@ -1,6 +1,6 @@
 [Unit]
 Description=Quassel Core
-After=network.target
+After=network.target postgresql-9.5.service
 
 [Service]
 User=quassel

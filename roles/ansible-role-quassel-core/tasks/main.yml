@@ -55,12 +55,12 @@
   yum: name=python-psycopg2 state=latest
 
 - name: Create postgresql user
-  postgresql_user: name=quassel role_attr_flags=NOSUPERUSER
+  postgresql_user: name=quassel role_attr_flags=NOSUPERUSER password=md5385e3946ae200102c4a03242e1b36099 encrypted=true
   become: true
   become_user: postgres
 
 - name: Create postgresql database
-  postgresql_db: name=quassel
+  postgresql_db: name=quassel owner=quassel
   become: true
   become_user: postgres
 
