@@ -3,7 +3,8 @@
 Simply installs and start quassel-core on boot. Get more informations about Quassel at [http://quassel-irc.org/]()
 
 ## Requirements
-Ubuntu or Debian
+
+Centos 7
 
 ## Role Variables
 * `quasselcore_port: 4242`: Port to bind quassel-core
